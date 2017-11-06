@@ -44,17 +44,23 @@ class Agent(object):
 
         # message -> gamestate
 
-        # gamestate -> rules
+        # while game not finished
+            # if my turn
 
-        # rules -> strategy
+                # gamestate -> rules
 
-        # strategy -> action
+                # rules -> strategy
 
-        # original message + action -> response
-        response_string = self.generate_response(action=None)
+                # strategy -> action
 
-        # send
-        self.send_string(response_string.encode())
+                # original message + action -> response
+                response_string = self.generate_response(action=None)
+
+                # send
+                self.send_string(response_string.encode())
+
+            # else not my turn
+                # do nothing
 
     def generate_response(self, action=None):
         response_string = ""
