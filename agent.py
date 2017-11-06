@@ -1,9 +1,9 @@
 import socket
-
+import sys
 
 class Agent(object):
 
-    def __init__(self, address, hand):
+    def __init__(self, address):
         self.address = address
         self.version_string = b'VERSION:2.0.0\r\n'
         self.connection = self.connect()
@@ -70,4 +70,14 @@ class Agent(object):
         return response_string
 
 
+def main(argv=None):
+    assert (len(argv) == 4)
+    ip = argv[1]
+    port = argv[2]
+    hand = argv[3]
+    agent = Agent((ip, port))
+    agent.play_hands(hand)
+
+if __name__ == '__main__':
+    main(sys.argv)
 
