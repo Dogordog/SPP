@@ -18,14 +18,6 @@ class GameState(object):
             for action in each_round_action:
                 self.action_list.append(Action(action))
         # set up basic data structure
-        self._setup()
-        # after setting up basic data structure, start to do each action and update data structure
-
-        for action in self.action_list:
-            self.do_action(action)
-        x=1
-
-    def _setup(self):
         self.spent = [50, 100, 0, 0, 0, 0]
         self.active = [True] * 6
         self.fold = [False] * 6
@@ -33,14 +25,18 @@ class GameState(object):
         self.pot = 150
         self.max_bet = 100
         self.min_bet = 50
-        self.current_player = 2 # player at seat 2 is first player to act in PREFLOP round
+        self.current_player = 2  # player at seat 2 is first player to act in PREFLOP round
         self.finished = False
         self.round = Round.PREFLOP
-        self.boards = [[],] # first round have no board cards
-        self.holes = [[]]*6 # initialize hole array for 6 players
-        self.min_no_limit_raise_to = 999 # todo
+        self.boards = [[], ]  # first round have no board cards
+        self.holes = [[]] * 6  # initialize hole array for 6 players
+        self.min_no_limit_raise_to = 999  # todo
         self.max_no_limit_raise_to = 20000
         # fill hole array according to
+        # after setting up basic data structure, start to do each action and update data structure
+
+        for action in self.action_list:
+            self.do_action(action)
 
     def do_action(self, action):
         # [1.0] do action, update player [spent] and [active]
@@ -50,10 +46,12 @@ class GameState(object):
             if self.max_bet == 20000:
                 self.active[self.current_player] = False
                 self.allin[self.current_player] = True
+
         #if current player folded -> not active
         elif action.type == ActionType.FOLD:
             self.active[self.current_player] = False
             self.fold[self.current_player] = True
+
         else:
             self.spent[self.current_player] = action.amount
             # if current player raised to stack size -> not active
@@ -67,29 +65,61 @@ class GameState(object):
         self.pot = sum(self.spent)
 
         # [3.0] if all active player spent same amount, which means they are reaching next round
-        # todo [update round, update current player, then return]
+        amount_set = ()
+        for p, amount in zip(self.active, self.spent):
+            if p:
+                amount_set.add(amount)
+        next_round_reaching_flag = len(amount_set) == 1
 
-        # update {current player}, find next active player
-        # if more than one active player left, find next active player
-        if self.active.count(True) > 1:
-            # game is not finished yet
-            # find next active player
-            next_player = (self.current_player + 1) % 6
-            while (self.active[next_player] == False):
-                next_player = (next_player + 1) % 6
-        elif self.active.count(True) == 1:
-            # game may finish now
-            # if there is no all-in player, which means other players all folded, only one player left
+        if next_round_reaching_flag:
+            # we are going to reach next round
+            # if current round == 4, then there is no more next round and the game ends here
+            if self.round == Round.RIVER:
+                self.finished = True
 
-            # else, there are all-in player, the only one player who is active is the next current player
+            # there are next round
+            else:
+                # update round
+                self.round += 1
+
+                # find next active player from seat 0
+                next_player = (self.current_player + 1) % 6
+                while not self.active[next_player]:
+                    next_player = (next_player + 1) % 6
+                self.current_player = next_player
+
+                # update min_no_limit_raise_to
+                self.min_no_limit_raise_to = 1
         else:
-            # active player number is 0, which means they are at least one player all-in, the rest are folded
-            # game is finished
+            # we are still at current round
+            # update {current player}, find next active player
+
+            # if more than one active player left, find next active player
+            if self.active.count(True) > 1:
+                # game is not finished yet
+                # find next active player
+                next_player = (self.current_player + 1) % 6
+                while not self.active[next_player]:
+                    next_player = (next_player + 1) % 6
+                self.current_player = next_player
+            elif self.active.count(True) == 1:
+                # game may finish now
+                # if there is no all-in player, which means other players all folded, only one player left
+                if self.allin.count(True) == 0:
+                    # game ends
+                    self.finished = True
+                # else, there are all-in player, the only one player who is active is the next current player
+                else:
+                    self.current_player = self.active.index(True)
+            else:
+                # active player number is 0, which means they are at least one player all-in, the rest are folded
+                # game is finished
+                self.finished = True
 
 
-
+    # split betting string into single betting actions
+    # if rd=None, by default, handle betting string of all rounds
     def get_betting_action(self, rd=None):
-
         pattern = re.compile(r'r\d+|f|c')
         if not rd:
             betting_action = []
@@ -115,21 +145,21 @@ class GameState(object):
     # return active player
     # a list containing True/False
     def get_active_player(self):
-        pass
+        return self.active
 
     def get_active_player_number(self):
-        pass
+        return self.active.count(True)
 
     def get_max_bet(self):
-        pass
+        return self.max_bet
 
     def get_min_bet(self):
-        pass
+        return self.min_bet
 
     def get_pot(self):
-        pass
+        return self.pot
 
     def get_next_valid_raise_size(self):
-        pass
+        return [self.min_no_limit_raise_to, self.max_no_limit_raise_to]
 
 g = GameState('MATCHSTATE:1:31:r300r900r3000/r4000cccfrcr30000/fcr200:|JdTc')
