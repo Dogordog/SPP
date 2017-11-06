@@ -7,6 +7,7 @@ class GameState(object):
 
     def __init__(self, message):
         self.message_parser = MessageParser(message)
+        self.viewing_player = self.message_parser.get_position()
         self.betting_string = self.message_parser.get_betting_string(rd=None)
         self.board_string = self.message_parser.get_board_string(rd=None)
         # a two-dimension list, dim-1 is round, dim-2 is i-th action of a round
@@ -32,7 +33,10 @@ class GameState(object):
         self.holes = [[]] * 6  # initialize hole array for 6 players
         self.min_no_limit_raise_to = 2 * 100
         self.max_no_limit_raise_to = 20000
-        # fill hole array according to
+
+        # update [hole] and [board]
+        # todo
+
         # after setting up basic data structure, start to do each action and update data structure
 
         for action in self.action_list:
@@ -164,5 +168,8 @@ class GameState(object):
 
     def get_next_valid_raise_size(self):
         return [self.min_no_limit_raise_to, self.max_no_limit_raise_to]
+
+    def is_my_turn(self):
+        return self.viewing_player == self.current_player
 
 g = GameState('MATCHSTATE:1:31:r300r900r3000/r15000cccfrcr20000/fcr200:|JdTc')
