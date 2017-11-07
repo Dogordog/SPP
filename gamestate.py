@@ -35,10 +35,10 @@ class GameState(object):
         self.max_no_limit_raise_to = 20000
 
         # update [hole] and [board]
-        # todo
+        self.holes = self.message_parser.get_hole_card(position=None)
+        self.boards = self.message_parser.get_board_card(rd=None)
 
         # after setting up basic data structure, start to do each action and update data structure
-
         for action in self.action_list:
             self.do_action(action)
 
@@ -128,7 +128,7 @@ class GameState(object):
     # if rd=None, by default, handle betting string of all rounds
     def get_betting_action(self, rd=None):
         pattern = re.compile(r'r\d+|f|c')
-        if not rd:
+        if rd is not None:
             betting_action = []
             for string in self.betting_string:
                 # parse string into single action string
