@@ -1,5 +1,6 @@
 import socket
 import sys
+from gamestate import GameState
 
 class Agent(object):
 
@@ -42,11 +43,10 @@ class Agent(object):
     def play_one_hand(self):
         self.message = self.receive_string()
 
-        # message -> gamestate
+        self.gamestate = GameState(self.message)
 
-        # while game not finished
-            # if my turn
-
+        while not self.gamestate.finished:
+            if self.gamestate.is_my_turn():
                 # gamestate -> rules
 
                 # rules -> strategy
@@ -61,10 +61,13 @@ class Agent(object):
 
             # else not my turn
                 # do nothing
+            # receive next message and update gamestate
+            self.message = self.receive_string()
+            self.gamestate = GameState(self.message)
 
     def generate_response(self, action=None):
         response_string = ""
-        if not action:
+        if action is not None:
             response_string = self.message + ":c\r\n"
         # else todo
         return response_string
