@@ -65,14 +65,14 @@ class MessageParser(object):
         return self.board_string
 
 
-str1 = 'MATCHSTATE:1:31:r300r900r3000ccccc/r9000ffffc/cc/cc:|JdTc||||/2c2d2h/3c/3d'
-mp = MessageParser(str1)
-# print(mp.get_hole_card())
-# print(mp.get_board_card())
-# print(mp.hole)
-# print(mp.board)
-print(mp.get_betting_string())
-print(mp.get_board_string())
+# str1 = 'MATCHSTATE:1:31:r300r900r3000ccccc/r9000ffffc/cc/cc:|JdTc||||/2c2d2h/3c/3d'
+# mp = MessageParser(str1)
+# # print(mp.get_hole_card())
+# # print(mp.get_board_card())
+# # print(mp.hole)
+# # print(mp.board)
+# print(mp.get_betting_string())
+# print(mp.get_board_string())
 
 
 

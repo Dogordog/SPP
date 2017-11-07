@@ -6,9 +6,9 @@ class Agent(object):
 
     def __init__(self, address):
         self.address = address
-        self.version_string = b'VERSION:2.0.0\r\n'
+        self.version_string = 'VERSION:2.0.0\r\n'
         self.connection = self.connect()
-        self.send_version_string()
+        self.send_string(self.version_string)
         self.message = ""
         self.gamestate = None
 
@@ -26,7 +26,8 @@ class Agent(object):
         message = ""
 
         while True:
-            single_character = self.connection.recv(1).decode()
+            single_character = self.connection.recv(1)
+            single_character = single_character.decode()
             message += single_character
 
             count = message.count("\n")
@@ -43,7 +44,6 @@ class Agent(object):
 
     def play_one_hand(self):
         self.message = self.receive_string()
-
         self.gamestate = GameState(self.message)
 
         while not self.gamestate.finished:
@@ -58,7 +58,7 @@ class Agent(object):
                 response_string = self.generate_response(action=None)
 
                 # send
-                self.send_string(response_string.encode())
+                self.send_string(response_string)
 
             # else not my turn
                 # do nothing
@@ -68,7 +68,7 @@ class Agent(object):
 
     def generate_response(self, action=None):
         response_string = ""
-        if action is not None:
+        if action is None:
             response_string = self.message + ":c\r\n"
         # else todo
         return response_string
@@ -79,8 +79,8 @@ def main(argv=None):
     ip = argv[1]
     port = argv[2]
     hand = argv[3]
-    agent = Agent((ip, port))
-    agent.play_hands(hand)
+    agent = Agent((ip, int(port)))
+    agent.play_hands(int(hand))
 
 
 if __name__ == '__main__':

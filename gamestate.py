@@ -170,9 +170,9 @@ class GameState(object):
     def is_my_turn(self):
         return self.viewing_player == self.current_player
 
-str1 = 'MATCHSTATE:1:31:r300r900r3000ccccc/r9000ffffc/cc/cc:|JdTc||||/2c2d2h/3c/3d'
-g = GameState(str1)
-
-print(g.get_next_valid_raise_size())
-print(g.finished)
-print(g.max_bet)
+# str1 = 'MATCHSTATE:1:31:r300r900r3000ccccc/r9000ffffc/cc/cc:|JdTc||||/2c2d2h/3c/3d'
+# g = GameState(str1)
+#
+# print(g.get_next_valid_raise_size())
+# print(g.finished)
+# print(g.max_bet)
