@@ -10,6 +10,7 @@ class Agent(object):
         self.connection = self.connect()
         self.send_version_string()
         self.message = ""
+        self.gamestate = None
 
     # connect to acpc server address=(ip, port)
     def connect(self):
@@ -80,6 +81,7 @@ def main(argv=None):
     hand = argv[3]
     agent = Agent((ip, port))
     agent.play_hands(hand)
+
 
 if __name__ == '__main__':
     main(sys.argv)

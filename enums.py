@@ -25,25 +25,3 @@ class Round(IntEnum):
 class CardType(IntEnum):
     HOLE = 0
     PUBLIC = 1
-
-
-ActionNames = {
-    ActionType.NEXT_ROUND : "NEXT_ROUND",
-    ActionType.CALL : "CALL",
-    ActionType.RAISE : "RAISE",
-    ActionType.FOLD : "FOLD",
-}
-
-
-RoundNames = {
-    Round.PREFLOP : "PREFLOP",
-    Round.FLOP : "FLOP",
-    Round.TURN : "TURN",
-    Round.RIVER : "RIVER",
-}
-
-
-CardNames = {
-    CardType.HOLE : "HOLE",
-    CardType.PUBLIC : "PUBLIC",
-}

@@ -71,7 +71,7 @@ class GameState(object):
                 self.allin[self.current_player] = True
 
         # [3.0] if all active player spent same amount, which means they are reaching next round
-        amount_set = ()
+        amount_set = set()
         for p, amount in zip(self.active, self.spent):
             if p:
                 amount_set.add(amount)
@@ -129,6 +129,13 @@ class GameState(object):
     def get_betting_action(self, rd=None):
         pattern = re.compile(r'r\d+|f|c')
         if rd is not None:
+            string = self.betting_string[rd]
+            current_round_action = []
+            # parse string into sigle action string
+            for m in pattern.finditer(string):
+                current_round_action.append(m.group())
+            return current_round_action
+        else:
             betting_action = []
             for string in self.betting_string:
                 # parse string into single action string
@@ -137,13 +144,6 @@ class GameState(object):
                     current_round_action.append(m.group())
                 betting_action.append(current_round_action)
             return betting_action
-        else:
-            string = self.betting_string[rd]
-            current_round_action = []
-            # parse string into sigle action string
-            for m in pattern.finditer(string):
-                current_round_action.append(m.group())
-            return current_round_action
 
     # who just did an action
     def get_current_player(self):
@@ -172,4 +172,5 @@ class GameState(object):
     def is_my_turn(self):
         return self.viewing_player == self.current_player
 
-g = GameState('MATCHSTATE:1:31:r300r900r3000/r15000cccfrcr20000/fcr200:|JdTc')
+str1 = 'MATCHSTATE:1:31:r300r900r3000ccccc/r9000ffffc/cc/cc:|JdTc||||/2c2d2h/3c/3d'
+g = GameState(str1)

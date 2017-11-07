@@ -44,8 +44,8 @@ class MessageParser(object):
     # return betting string of round, last round by default
     def get_betting_string(self, rd=None):
         if rd is not None:
-            return self.betting_string
-        return self.betting_string[rd]
+            return self.betting_string[rd]
+        return self.betting_string
 
     def get_hole_card(self, position=None):
         if position is not None:
@@ -65,11 +65,14 @@ class MessageParser(object):
         return self.board_string
 
 
-# str1 = 'MATCHSTATE:1:31:r300r900r3000:|JdTc||||/2c2d2h/3c/3d'
-# mp = MessageParser(str1)
+str1 = 'MATCHSTATE:1:31:r300r900r3000ccccc/r9000ffffc/cc/cc:|JdTc||||/2c2d2h/3c/3d'
+mp = MessageParser(str1)
 # print(mp.get_hole_card())
 # print(mp.get_board_card())
 # print(mp.hole)
 # print(mp.board)
+print(mp.get_betting_string())
+print(mp.get_board_string())
+
 
 
