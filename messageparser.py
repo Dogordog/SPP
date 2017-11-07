@@ -11,9 +11,11 @@ class MessageParser(object):
         self.hand_number = int(hand_number)
         self.betting_string = betting_string.split("/")
         card_string = board_string.split("/")
+        # hole string is the whole string represents all players hole, like "|JdTc||||"
         self.hole_string = card_string[0]
         # board string one-dimension array like "2d3cTh5c"
-        self.board_string = "".join(card_string[1:]) # board string could be []
+        # board string could be [], is the whole string represents boards of all rounds
+        self.board_string = "".join(card_string[1:])
         # handle hole
         self.hole = self.parse_hole()
         self.hole_card = [[CardTool.string_2_card(x) for x in self.hole[y]] for y in range(6)]
@@ -63,11 +65,11 @@ class MessageParser(object):
         return self.board_string
 
 
-str1 = 'MATCHSTATE:1:31:r300r900r3000:|JdTc||||/2c2d2h/3c/3d'
-
-mp = MessageParser(str1)
-
-print(mp.get_hole_card())
-print(mp.get_board_card())
+# str1 = 'MATCHSTATE:1:31:r300r900r3000:|JdTc||||/2c2d2h/3c/3d'
+# mp = MessageParser(str1)
+# print(mp.get_hole_card())
+# print(mp.get_board_card())
+# print(mp.hole)
+# print(mp.board)
 
 
