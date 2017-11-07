@@ -89,14 +89,12 @@ class GameState(object):
                 self.round += 1
                 # update min_no_limit_raise_to
                 self.min_no_limit_raise_to += self.max_bet
+                self.min_no_limit_raise_to = min([self.min_no_limit_raise_to, 20000])
                 # find next active player from seat 0
                 next_player = (self.current_player + 1) % 6
                 while not self.active[next_player]:
                     next_player = (next_player + 1) % 6
                 self.current_player = next_player
-
-                # update min_no_limit_raise_to
-                self.min_no_limit_raise_to = 1
         else:
             # we are still at current round
             # update {current player}, find next active player
@@ -174,3 +172,7 @@ class GameState(object):
 
 str1 = 'MATCHSTATE:1:31:r300r900r3000ccccc/r9000ffffc/cc/cc:|JdTc||||/2c2d2h/3c/3d'
 g = GameState(str1)
+
+print(g.get_next_valid_raise_size())
+print(g.finished)
+print(g.max_bet)
