@@ -1,6 +1,8 @@
 import socket
 import sys
 from gamestate import GameState
+from action import Action
+from random import choice
 
 class Agent(object):
 
@@ -55,7 +57,8 @@ class Agent(object):
                 # strategy -> action
 
                 # original message + action -> response
-                response_string = self.generate_response(action=None)
+                action = self.choose_random_action()
+                response_string = self.generate_response(action)
 
                 # send
                 self.send_string(response_string)
@@ -66,11 +69,32 @@ class Agent(object):
             self.message = self.receive_string()
             self.gamestate = GameState(self.message)
 
+    def choose_random_action(self):
+        # CALL is always valid
+        valid = [Action("c")]
+        min_bet, max_bet = self.gamestate.get_next_valid_raise_size()
+
+        # raise minimal amount or maximal amount
+        if self.max_bet == 20000:
+            valid.append(Action("f"))
+        else:
+            if min_bet == 20000:
+                valid.append(Action("r20000"))
+            else: # < 20000
+                valid.append(Action("r" + min_bet))
+                valid.append(Action("r" + max_bet))
+
+        # fold
+        if self.max_bet > self.gamestate.spent[self.gamestate.current_player]:
+            valid.append(Action("f"))
+        return choice(valid)
+
     def generate_response(self, action=None):
         response_string = ""
         if action is None:
             response_string = self.message + ":c\r\n"
-        # else todo
+        else:
+            response_string = self.message + ":" + action.string + "\r\n"
         return response_string
 
 
