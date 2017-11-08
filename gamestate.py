@@ -34,18 +34,23 @@ class GameState(object):
         self.min_no_limit_raise_to = 2 * 100
         self.max_no_limit_raise_to = 20000
 
+        self.call_number = 0
+
         # update [hole] and [board]
         self.holes = self.message_parser.get_hole_card(position=None)
         self.boards = self.message_parser.get_board_card(rd=None)
 
         # after setting up basic data structure, start to do each action and update data structure
+        cnt = 0
         for action in self.action_list:
+            cnt+=1
             self.do_action(action)
 
     def do_action(self, action):
         # [1.0] do action, update player [spent] and [active]
         if action.type == ActionType.CALL:
             self.spent[self.current_player] = self.max_bet
+            self.call_number += 1
             # if current player called ALLIN action -> not active
             if self.max_bet == 20000:
                 self.active[self.current_player] = False
@@ -57,6 +62,7 @@ class GameState(object):
             self.fold[self.current_player] = True
 
         else: # must be a raise action
+            self.call_number = 1
             # a raise action happened, min_no_limit_raise_to need to be updated
             if action.amount + action.amount - max(self.spent) > self.min_no_limit_raise_to:
                 self.min_no_limit_raise_to = action.amount + action.amount - max(self.spent)
@@ -70,14 +76,21 @@ class GameState(object):
                 self.active[self.current_player] = False
                 self.allin[self.current_player] = True
 
+        # if all players choose all in, then game ends, which no active players
+        if self.active.count(True) == 0:
+            self.finished = True
+            return
+
         # [3.0] if all active player spent same amount, which means they are reaching next round
         amount_set = set()
         for p, amount in zip(self.active, self.spent):
             if p:
                 amount_set.add(amount)
-        next_round_reaching_flag = len(amount_set) == 1
+        next_round_reaching_flag = len(amount_set) == 1 and self.call_number == self.fold.count(False)
 
         if next_round_reaching_flag:
+            # reset call number
+            self.call_number = 0
             # we are going to reach next round
             # if current round == 4, then there is no more next round and the game ends here
             if self.round == Round.RIVER:
@@ -91,7 +104,7 @@ class GameState(object):
                 self.min_no_limit_raise_to += self.max_bet
                 self.min_no_limit_raise_to = min([self.min_no_limit_raise_to, 20000])
                 # find next active player from seat 0
-                next_player = (self.current_player + 1) % 6
+                next_player = 0
                 while not self.active[next_player]:
                     next_player = (next_player + 1) % 6
                 self.current_player = next_player
@@ -171,7 +184,11 @@ class GameState(object):
         return self.viewing_player == self.current_player
 
 # str1 = 'MATCHSTATE:1:31:r300r900r3000ccccc/r9000ffffc/cc/cc:|JdTc||||/2c2d2h/3c/3d'
-# g = GameState(str1)
+#s = "MATCHSTATE:4:2:fr16524cccc/cr16799r18449:||||Td6c|/Qd9sJc"
+s = "MATCHSTATE:1:5:cccccc/cc:|4h2s||||"
+g = GameState(s)
+print(g.current_player)
+print(g.active)
 #
 # print(g.get_next_valid_raise_size())
 # print(g.finished)
