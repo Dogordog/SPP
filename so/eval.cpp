@@ -30,12 +30,6 @@ void evalShowdown(int board[], int hole[][2], int player_number, int hs[]){
 	// }
 }
 
-int sample_win_pr(int board[], int hole[], int opponent_number, int board_count){
-	if (board_count == 5) {
-
-	}
-}
-
 double sample_5board_win_pr(int board[], int hole[], int opponent_number, int iteration){
 	// sample [non-conflict] opponent hole
 	Cardset public_cs = emptyCardset();
@@ -137,6 +131,88 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 	return win_count / iteration;
 }
 
+double sample_4board_win_pr(int board[] ,int hole[], int opponent_number, int iteration) {
+    Cardset public_cs = emptyCardset();
+	for(int i=0; i<4; i++){
+		addCardToCardset(&public_cs, board[i]%4, board[i]/4);
+	}
+
+	// generate all possible river board card
+	unordered_map<int, int> used_cards;
+    for (int i=0; i<52; i++){
+		used_cards[i] = 0;
+	} // init
+	for (int i=0; i<5; i++){
+		used_cards[board[i]] = 1;
+	}
+	used_cards[hole[0]] = 1;
+	used_cards[hole[1]] = 1;
+
+    double win_pr_5[46];
+    int k = 0;
+    for (int i = 0;i < 52;i ++) {
+
+        if (used_cards[i] == 0) {
+            int temp_board[5];
+            memcpy(temp_board, board, 4 * sizeof(int));
+            for(int j = 0;j < 4;j ++) {
+                temp_board[j] = board[j];
+            }
+            temp_board[4] = i;
+            win_pr_5[k ++] = sample_5board_win_pr(temp_board, hole, opponent_number, iteration);
+        }
+        else {
+            continue;
+        }
+    }
+
+    double pr_sum = 0;
+    for (int i = 0;i < 46;i ++) {
+        pr_sum += win_pr_5[i];
+    }
+
+    return pr_sum / 46;
+}
+
+double sample_3board_win_pr(int board[] ,int hole[], int opponent_number, int iteration) {
+    Cardset public_cs = emptyCardset();
+	for(int i=0; i<3; i++){
+		addCardToCardset(&public_cs, board[i]%4, board[i]/4);
+	}
+
+	// generate all possible river board card
+	unordered_map<int, int> used_cards;
+    for (int i=0; i<52; i++){
+		used_cards[i] = 0;
+	} // init
+	for (int i=0; i<4; i++){
+		used_cards[board[i]] = 1;
+	}
+	used_cards[hole[0]] = 1;
+	used_cards[hole[1]] = 1;
+
+    double win_pr_4[45];
+    int k = 0;
+    for (int i = 0;i < 52;i ++) {
+
+        if (used_cards[i] == 0) {
+            int temp_board[4];
+            memcpy(temp_board, board, 3 * sizeof(int));
+            temp_board[3] = i;
+            win_pr_4[k ++] = sample_4board_win_pr(temp_board, hole, opponent_number, iteration);
+        }
+        else {
+            continue;
+        }
+    }
+
+    double pr_sum = 0;
+    for (int i = 0;i < 45;i ++) {
+        pr_sum += win_pr_4[i];
+    }
+
+    return pr_sum / 45;
+}
 
 
 int main(int argc, char const *argv[])
