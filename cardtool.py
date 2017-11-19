@@ -27,3 +27,20 @@ class CardTool(object):
     def card_to_string(cls, value):
         return cls.string_dict[value]
 
+    @classmethod
+    def rank_of_card(cls, card):
+        return card // 4
+
+    @classmethod
+    def suit_of_card(cls, card):
+        return card % 4
+
+    @classmethod
+    def display(cls):
+        print("card [0-51]")
+        print('2c ' + str(cls.string_2_card('2c')))
+        print('2d ' + str(cls.string_2_card('2d')))
+        print('...')
+
+# CardTool.display()
+

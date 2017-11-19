@@ -7,6 +7,10 @@ class GameState(object):
 
     def __init__(self, message):
         self.message_parser = MessageParser(message)
+        # hole, [['2c', '2d'],...] for 6 players
+        self.hole = self.message_parser.hole
+        # board ['2c', '2d', '2h', ...] for at most 5 board cards
+        self.board = self.message_parser.board
         self.viewing_player = self.message_parser.get_position()
         self.betting_string = self.message_parser.get_betting_string(rd=None)
         self.board_string = self.message_parser.get_board_string(rd=None)
@@ -187,8 +191,10 @@ class GameState(object):
 #s = "MATCHSTATE:4:2:fr16524cccc/cr16799r18449:||||Td6c|/Qd9sJc"
 s = "MATCHSTATE:1:5:cccccc/cc:|4h2s||||"
 g = GameState(s)
-print(g.current_player)
-print(g.active)
+# print(g.current_player)
+# print(g.active)
+print(g.holes)
+# print(g.boards)
 #
 # print(g.get_next_valid_raise_size())
 # print(g.finished)
