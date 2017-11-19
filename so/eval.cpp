@@ -7,9 +7,8 @@ extern "C"{
 #include <unordered_map> 
 #include <time.h>
 #include <set>
+#include <string.h>
 using namespace std; 
-set<int> values;
- 
 
 
 void evalShowdown(int board[], int hole[][2], int player_number, int hs[]){
@@ -43,8 +42,6 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 	addCardToCardset(&hole_cs, hole[1]%4, hole[1]/4);
 	int hole_hs = rankCardset(hole_cs);
 
-	values.insert(hole_hs);
-
 	// generate all possible 
 	// [1.record used cards 2.pre-compute hand strength lookup table 3.generate non-conflict opponent holes]
 	// [1]
@@ -68,7 +65,6 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 				addCardToCardset(&opponent_cs, j%4, j/4);
 				table[i][j] = rankCardset(opponent_cs);
 				table[j][i] = table[i][j];
-				values.insert(table[i][j]);
 			} else {
 				table[i][j] = -1;
 				table[j][i] = -1;
@@ -122,7 +118,6 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 		if(flag == 1){
 			win_count++;
 		} else if(flag == 0) {
-			tie_count ++;
 			win_count += 1.0 / (1+tie_number);
 		} else {
 			// flag = -1, do nothing
@@ -217,13 +212,11 @@ double sample_3board_win_pr(int board[] ,int hole[], int opponent_number, int it
 
 int main(int argc, char const *argv[])
 {
-	int board[] = {32,36,40,44,48};
-	int one_hole[] = {0,1};
-	// evalShowdown(board, hole, 3, hs);
-	double res = sample_5board_win_pr(board,one_hole,1,1000000);
+	int board[] = {5,9,49};
+	int one_hole[] = {10,3};
+	// // evalShowdown(board, hole, 3, hs);
+	double res = sample_3board_win_pr(board,one_hole,5,10000);
 	cout<<res<<endl;
-	for(int i: values)
-		cout<<i<<endl;
 	return 0;
 }
 

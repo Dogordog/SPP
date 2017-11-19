@@ -3,6 +3,7 @@ import sys
 from gamestate import GameState
 from action import Action
 from random import choice
+from strategy import Strategy
 
 class Agent(object):
 
@@ -51,14 +52,14 @@ class Agent(object):
         while not self.gamestate.finished:
             if self.gamestate.is_my_turn():
                 # gamestate -> rules
-
+                strategy = Strategy(self.gamestate)
                 # rules -> strategy
 
                 # strategy -> action
 
                 # original message + action -> response
-                action = self.choose_random_action()
-                response_string = self.generate_response(action)
+                # action = self.choose_random_action()
+                response_string = self.generate_response(strategy.get_action())
 
                 # send
                 self.send_string(response_string)
