@@ -15,6 +15,7 @@ class Strategy(object):
         self.round = gamestate.round
         self.player_number = gamestate.fold.count(False)
         self.my_hole = gamestate.holes[self.gamestate.viewing_player]
+        self.my_hole_str = gamestate.hole[self.gamestate.viewing_player]
         self.boards = gamestate.boards
         self.pot = gamestate.pot
         self.max_bet = gamestate.max_bet
@@ -36,8 +37,8 @@ class Strategy(object):
     def get_win_pr(self):
 
         if self.round == Round.PREFLOP:
-            c1 = self.my_hole[0]
-            c2 = self.my_hole[1]
+            c1 = self.my_hole_str[0]
+            c2 = self.my_hole_str[1]
 
             if int(c1[0]) < int(c2[0]):
                 c1, c2 = c2, c1
@@ -91,7 +92,7 @@ class Strategy(object):
             return sample_5board_win_pr(board, hole, self.player_number - 1, 10000)
 
 
-s = "MATCHSTATE:1:5:cccccc/cc:|4h2s||||/3d4dAd"
+s = "MATCHSTATE:1:5:ccccc:|4h2s||||/3d4dAd"
 g = GameState(s)
 
 st = Strategy(g)
