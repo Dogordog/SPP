@@ -4,9 +4,12 @@ extern "C"{
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
-#include<unordered_map> 
-
-using namespace std;  
+#include <unordered_map> 
+#include <time.h>
+#include <set>
+using namespace std; 
+set<int> values;
+ 
 
 
 void evalShowdown(int board[], int hole[][2], int player_number, int hs[]){
@@ -46,6 +49,8 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 	addCardToCardset(&hole_cs, hole[1]%4, hole[1]/4);
 	int hole_hs = rankCardset(hole_cs);
 
+	values.insert(hole_hs);
+
 	// generate all possible 
 	// [1.record used cards 2.pre-compute hand strength lookup table 3.generate non-conflict opponent holes]
 	// [1]
@@ -69,6 +74,7 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 				addCardToCardset(&opponent_cs, j%4, j/4);
 				table[i][j] = rankCardset(opponent_cs);
 				table[j][i] = table[i][j];
+				values.insert(table[i][j]);
 			} else {
 				table[i][j] = -1;
 				table[j][i] = -1;
@@ -88,6 +94,10 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 	double win_count = 0;
 	for(int t=0; t<iteration; t++){
 
+		if(t%1000 == 0){
+			srand((unsigned)time(NULL));  
+		}
+
 		int flag = 1; // 0 for tie, 1 for win, -1 for lose
 
 		// select (2 * opponent_number) cards from 45 cards
@@ -96,7 +106,7 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 			int index = rand() % (45-i);
 			opponent_holes[i] = valid_cards[index];
 			int temp = valid_cards[45-i-1];
-			valid_cards[45-i-1] = index;
+			valid_cards[45-i-1] = valid_cards[index];
 			valid_cards[index] = temp;
 		}
 
@@ -105,6 +115,7 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 			int card1 = opponent_holes[2*i];
 			int card2 = opponent_holes[2*i + 1];
 			int opponent_hs = table[card1][card2];
+			
 			if(opponent_hs > hole_hs) {
 				flag = -1;
 				break;
@@ -117,20 +128,26 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 		if(flag == 1){
 			win_count++;
 		} else if(flag == 0) {
-			win_count += 1.0 / tie_number;
+			tie_count ++;
+			win_count += 1.0 / (1+tie_number);
+		} else {
+			// flag = -1, do nothing
 		}
 	}
-	
 	return win_count / iteration;
 }
 
+
+
 int main(int argc, char const *argv[])
 {
-	int board[] = {0,12,19,11,33};
-	int one_hole[] = {9,34};
+	int board[] = {32,36,40,44,48};
+	int one_hole[] = {0,1};
 	// evalShowdown(board, hole, 3, hs);
 	double res = sample_5board_win_pr(board,one_hole,1,1000000);
 	cout<<res<<endl;
+	for(int i: values)
+		cout<<i<<endl;
 	return 0;
 }
 
