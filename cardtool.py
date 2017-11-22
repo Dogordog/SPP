@@ -1,4 +1,5 @@
-
+from enums import Round
+from random import randint
 
 class CardTool(object):
 
@@ -36,11 +37,40 @@ class CardTool(object):
         return card % 4
 
     @classmethod
+    def deal_all_cards(cls, rd):
+        dealed_cards = []
+        card_number = 0
+        if rd == Round.PREFLOP:
+            card_number = 12
+        elif rd == Round.FLOP:
+            card_number = 15
+        elif rd == Round.TURN:
+            card_number = 16
+        elif rd == Round.RIVER:
+            card_number = 17
+        cards = list(range(52))
+
+        for i in range(card_number):
+            card_index = randint(0, 51-i)
+            dealed_cards.append(cards[card_index])
+            cards[card_index], cards[-1-i] = cards[-1-i], cards[card_index]
+        holes = [([0] * 2) for i in range(6)]
+        boards = []
+        k = 0
+        for i in range(6):
+            for j in range(2):
+                holes[i][j] = dealed_cards[k]
+                k += 1
+        boards = dealed_cards[k:]
+
+        return holes, boards
+
+    @classmethod
     def display(cls):
         print("card [0-51]")
         print('2c ' + str(cls.string_2_card('2c')))
         print('2d ' + str(cls.string_2_card('2d')))
         print('...')
 
-# CardTool.display()
-
+# x = CardTool.deal_all_cards(rd=Round.RIVER)
+# print(x[0], x[1])

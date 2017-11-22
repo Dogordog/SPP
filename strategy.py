@@ -10,6 +10,7 @@ dll = cdll.LoadLibrary("./so/eval.so")
 class Strategy(object):
 
     def __init__(self, gamestate):
+        self.d = {'2':0,'3':1,'4':2,'5':3,'6':4,'7':5,'8':6,'9':7,'T':8,'J':9,'Q':10,'K':11,'A':12}
         self.gamestate = gamestate
         self.win_table = pd.read_csv("./data/preflop/2346players.csv", index_col=0, header=0)
         self.round = gamestate.round
@@ -23,7 +24,7 @@ class Strategy(object):
 
     def get_action(self):
         win_pr = self.get_win_pr()
-        e_payoff = (self.pot - self.my_bet) * win_pr - (self.max_bets - self.my_bet) * (1-win_pr)
+        e_payoff = (self.max_bet * (self.player_number - 1)) * win_pr - (self.max_bet - self.my_bet) * (1-win_pr)
 
         if e_payoff < 0:
             return Action("f")
@@ -40,7 +41,7 @@ class Strategy(object):
             c1 = self.my_hole_str[0]
             c2 = self.my_hole_str[1]
 
-            if int(c1[0]) < int(c2[0]):
+            if self.d[c1[0]] < self.d[c2[0]]:
                 c1, c2 = c2, c1
             suited = "s" if c1[1] == c2[1] else "u"
             key = c1[0] + "/" + c2[0] + " " + suited

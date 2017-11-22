@@ -33,10 +33,12 @@ class GameState(object):
         self.current_player = 2  # player at seat 2 is first player to act in PREFLOP round
         self.finished = False
         self.round = Round.PREFLOP
-        self.boards = [[], ]  # first round have no board cards
-        self.holes = [[]] * 6  # initialize hole array for 6 players
+        self.boards = None  # first round have no board cards
+        self.holes = None  # hole array for 6 players
         self.min_no_limit_raise_to = 2 * 100
         self.max_no_limit_raise_to = 20000
+
+        self.next_round_flag = False
 
         self.call_number = 0
 
@@ -91,7 +93,7 @@ class GameState(object):
             if p:
                 amount_set.add(amount)
         next_round_reaching_flag = len(amount_set) == 1 and self.call_number == self.fold.count(False)
-
+        self.next_round_flag = next_round_reaching_flag
         if next_round_reaching_flag:
             # reset call number
             self.call_number = 0
@@ -189,11 +191,12 @@ class GameState(object):
 
 # str1 = 'MATCHSTATE:1:31:r300r900r3000ccccc/r9000ffffc/cc/cc:|JdTc||||/2c2d2h/3c/3d'
 #s = "MATCHSTATE:4:2:fr16524cccc/cr16799r18449:||||Td6c|/Qd9sJc"
-s = "MATCHSTATE:1:5:cccccc/cc:|4h2s||||"
+s = "MATCHSTATE:1:5:r200fccff:|4h2s||||"
 g = GameState(s)
 # print(g.current_player)
-# print(g.active)
+print(g.active)
 print(g.holes)
+print(g.next_round_flag)
 # print(g.boards)
 #
 # print(g.get_next_valid_raise_size())
