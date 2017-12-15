@@ -4275,4 +4275,5 @@ int add(int a, int b);
 double sample_5board_win_pr(int board[], int hole[], int opponent_number, int iteration);
 double sample_4board_win_pr(int board[], int hole[], int opponent_number, int iteration);
 double sample_3board_win_pr(int board[], int hole[], int opponent_number, int iteration);
+void evalShowdown(int board[], int hole[][2], int player_number, int hs[]);
 

@@ -52,6 +52,7 @@ class TreeBuilder(object):
 class Node(object):
 
     def __init__(self):
+        self.id = None
         self.action_cnt = None
         self.spent = None
         self.round = None

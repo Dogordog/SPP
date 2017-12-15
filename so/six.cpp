@@ -4,11 +4,11 @@ extern "C"{
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
-#include <unordered_map> 
+#include <unordered_map>
 #include <time.h>
 #include <set>
 #include <string.h>
-using namespace std; 
+using namespace std;
 
 
 void evalShowdown(int board[], int hole[][2], int player_number, int hs[]){
@@ -16,13 +16,17 @@ void evalShowdown(int board[], int hole[][2], int player_number, int hs[]){
 	for(int i=0; i<5; i++){
 		addCardToCardset(&public_cs, board[i]%4, board[i]/4);
 	}
-	
+
 	for(int i=0; i<player_number; i++) {
 		Cardset cs = public_cs;
 		addCardToCardset(&cs, hole[i][0]%4, hole[i][0]/4);
 		addCardToCardset(&cs, hole[i][1]%4, hole[i][1]/4);
 		hs[i] = rankCardset(cs);
 	}
+
+	// for (int i=0; i<player_number; i++){
+	// 	printf("%d\n", hs[i]);
+	// }
 }
 
 double sample_5board_win_pr(int board[], int hole[], int opponent_number, int iteration){
@@ -38,7 +42,7 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 	addCardToCardset(&hole_cs, hole[1]%4, hole[1]/4);
 	int hole_hs = rankCardset(hole_cs);
 
-	// generate all possible 
+	// generate all possible
 	// [1.record used cards 2.pre-compute hand strength lookup table 3.generate non-conflict opponent holes]
 	// [1]
 	unordered_map<int, int> used_cards;
@@ -81,7 +85,7 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 	for(int t=0; t<iteration; t++){
 
 		if(t%1000 == 0){
-			srand((unsigned)time(NULL));  
+			srand((unsigned)time(NULL));
 		}
 
 		int flag = 1; // 0 for tie, 1 for win, -1 for lose
@@ -101,7 +105,7 @@ double sample_5board_win_pr(int board[], int hole[], int opponent_number, int it
 			int card1 = opponent_holes[2*i];
 			int card2 = opponent_holes[2*i + 1];
 			int opponent_hs = table[card1][card2];
-			
+
 			if(opponent_hs > hole_hs) {
 				flag = -1;
 				break;
@@ -205,7 +209,6 @@ double sample_3board_win_pr(int board[] ,int hole[], int opponent_number, int it
     return pr_sum / 45;
 }
 
-
 int main(int argc, char const *argv[])
 {
 	int board[] = {0,43,40};
@@ -227,7 +230,7 @@ int add(int a, int b){
 
 
 // generate lib.so
-// gcc eval.cpp -fPIC -shared -o lib.so -fno-stack-protector -std=c++11
+// gcc eval.cpp -fPIC -shared -o lib.so
 
 // python3 test.py to call add function of lib.so
 
